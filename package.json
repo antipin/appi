@@ -1,0 +1,25 @@
+{
+  "name": "appi",
+  "version": "1.0.0",
+  "description": "Unopinionated modular framwork for server applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/antipin/appi.git"
+  },
+  "keywords": [
+    "server",
+    "framework",
+    "di",
+    "appi"
+  ],
+  "author": "Alexander I. Antipin",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/antipin/appi/issues"
+  },
+  "homepage": "https://github.com/antipin/appi#readme"
+}
