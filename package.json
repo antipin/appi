@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/antipin/appi.git"
+    "url": "git+ssh://git@github.com/labs42/appi.git"
   },
   "keywords": [
     "server",
@@ -19,7 +19,7 @@
   "author": "Alexander I. Antipin",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/antipin/appi/issues"
+    "url": "https://github.com/labs42/appi/issues"
   },
-  "homepage": "https://github.com/antipin/appi#readme"
+  "homepage": "https://github.com/labs42/appi#readme"
 }
