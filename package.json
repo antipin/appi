@@ -4,7 +4,8 @@
   "description": "Unopinionated modular framwork for server applications",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "./node_modules/.bin/prelint"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,12 @@
   "bugs": {
     "url": "https://github.com/labs42/appi/issues"
   },
-  "homepage": "https://github.com/labs42/appi#readme"
+  "homepage": "https://github.com/labs42/appi#readme",
+  "precommit": [
+    "lint"
+  ],
+  "devDependencies": {
+    "eslint-config-labs42": "1.0.2",
+    "prelint": "1.0.1"
+  }
 }
