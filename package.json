@@ -4,7 +4,8 @@
   "description": "Unopinionated modular framwork for server applications",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/babel ./src --out-dir dist --copy-files",
+    "build:dev": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --watch",
     "lint": "./node_modules/.bin/prelint"
   },
   "repository": {
@@ -27,6 +28,8 @@
     "lint"
   ],
   "devDependencies": {
+    "babel-cli": "6.14.0",
+    "babel-preset-labs42": "1.0.1",
     "eslint-config-labs42": "1.0.2",
     "prelint": "1.0.1"
   }
