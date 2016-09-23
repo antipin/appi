@@ -17,7 +17,7 @@
     "di",
     "appi"
   ],
-  "author": "Alexander I. Antipin",
+  "author": "Alexander I. Antipin <alex@antipin.com>",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/labs42/appi/issues"
