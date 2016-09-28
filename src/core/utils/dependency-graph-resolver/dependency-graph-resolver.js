@@ -13,7 +13,7 @@
  */
 
 /**
- * Class is used for grpah related errors
+ * Class is used for GraphResolver related errors
  * @extends Error
  */
 class GraphError extends Error {
@@ -35,30 +35,35 @@ class GraphResolver {
         /**
          * Input graph
          * @type {Graph}
+         * @private
          */
         this.graph = graph
 
         /**
          * Helper structure that maps nodes to its deps
          * @type {Map}
+         * @private
          */
         this.graphToDepsMap = GraphResolver.makeNodeToDepsMap(graph)
 
         /**
          * Stack of nodes
          * @type {Array.<Node>}
+         * @private
          */
         this.stack = this.graph.map(item => item.node)
 
         /**
          * Storage of nodes that were successfully resolved
          * @type {Set}
+         * @private
          */
         this.resolvedNodes = new Set()
 
         /**
          * Storage of nodes that were visited but at that moment they were unresolvable
          * @type {Set}
+         * @private
          */
         this.visitedNodes = new Set()
 
@@ -114,6 +119,7 @@ class GraphResolver {
      * Detects if node is resolved already
      * @param {Node} node
      * @returns {boolean}
+     * @private
      */
     isNodeResolved(node) {
 
@@ -125,6 +131,7 @@ class GraphResolver {
      * Detects if node can be resolved right now (all dependencies are resolved)
      * @param {Node} node
      * @returns {boolean}
+     * @private
      */
     isNodeResolvable(node) {
 
@@ -138,6 +145,7 @@ class GraphResolver {
      * Extracts nodes that forms the cycle from this.visitedNodes set
      * @param {Node} node
      * @returns {Array.<Node>}
+     * @private
      */
     extractCycle(node) {
 
@@ -171,6 +179,7 @@ class GraphResolver {
      * Builds a map of nodes to its dependencies
      * @param {Graph} graph
      * @returns {Map}
+     * @private
      */
     static makeNodeToDepsMap(graph) {
 
@@ -193,6 +202,7 @@ class GraphResolver {
      * @throws {GraphError} if any graph item is not valid
      * @throws {GraphError} if any node defined more than once
      * @returns {void}
+     * @private
      */
     static validate(graph) {
 
