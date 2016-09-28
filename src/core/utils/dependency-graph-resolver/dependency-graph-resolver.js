@@ -5,12 +5,20 @@
 /**
  * @typedef {Object} GraphItem
  * @property {Node} node
- * @property {Array<Node>} deps
+ * @property {Array.<Node>} deps
  */
 
 /**
- * @typedef {Array<GraphItem>} Graph
+ * @typedef {Array.<GraphItem>} Graph
  */
+
+/**
+ * Class is used for grpah related errors
+ * @extends Error
+ */
+class GraphError extends Error {
+
+}
 
 /**
  * Resolves dependency graph. Graph nodes and deps could be represent as any js type
@@ -38,7 +46,7 @@ class GraphResolver {
 
         /**
          * Stack of nodes
-         * @type {Array<Node>}
+         * @type {Array.<Node>}
          */
         this.stack = this.graph.map(item => item.node)
 
@@ -58,8 +66,8 @@ class GraphResolver {
 
     /**
      * Trying to resolve dependency graph
-     * @throws {Error} if graph has cycled dependencies
-     * @returns {Array<Node>}
+     * @throws {GraphError} if graph has cycled dependencies
+     * @returns {Array.<Node>}
      */
     resolve() {
 
@@ -84,7 +92,7 @@ class GraphResolver {
                 // Cycle detection
                 if (visitedNodes.has(currentNode)) {
 
-                    throw new Error(`Dependency cycle detected: ${this.extractCycle(currentNode).join(' -> ')}`)
+                    throw new GraphError(`Dependency cycle detected: ${this.extractCycle(currentNode).join(' -> ')}`)
 
                 }
 
@@ -129,7 +137,7 @@ class GraphResolver {
     /**
      * Extracts nodes that forms the cycle from this.visitedNodes set
      * @param {Node} node
-     * @returns {Array<Node>}
+     * @returns {Array.<Node>}
      */
     extractCycle(node) {
 
@@ -181,16 +189,16 @@ class GraphResolver {
     /**
      * Builds a map of nodes to its dependencies
      * @param {Graph} graph
-     * @throws {Error} if graph is not an Array
-     * @throws {Error} if any graph item is not valid
-     * @throws {Error} if any node defined more than once
+     * @throws {GraphError} if graph is not an Array
+     * @throws {GraphError} if any graph item is not valid
+     * @throws {GraphError} if any node defined more than once
      * @returns {void}
      */
     static validate(graph) {
 
         if (Array.isArray(graph) === false) {
 
-            throw new Error('Graph should be represented as an array')
+            throw new GraphError('Graph should be represented as an array')
 
         }
 
@@ -201,13 +209,13 @@ class GraphResolver {
 
             if (allowedNodeTypes.includes(typeof item.node) === false || Array.isArray(item.deps) === false) {
 
-                throw new Error('Every graph item should have valid "node" and "deps" properties')
+                throw new GraphError('Every graph item should have valid "node" and "deps" properties')
 
             }
 
             if (nodes.has(item.node)) {
 
-                throw new Error(`Graph node ${item.node.toString()} defined more than once`)
+                throw new GraphError(`Graph node ${item.node.toString()} defined more than once`)
 
             }
 
@@ -223,8 +231,8 @@ class GraphResolver {
  * It takes a graph of objects that represents dependencies between them and resolves it in a right order
  *
  * @param {Graph} graph Dependency graph that is needed to be resolved
- * @throws {Error} if graph has cycled dependencies
- * @returns {Array<Node>} Resolved graph in the form of array
+ * @throws {GraphError} if graph has cycled dependencies
+ * @returns {Array.<Node>} Resolved graph in the form of array
  */
 export function resolveDependencyGraph(graph) {
 
