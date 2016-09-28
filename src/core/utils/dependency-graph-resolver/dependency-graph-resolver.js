@@ -34,7 +34,7 @@ class GraphResolver {
          * Helper structure that maps nodes to its deps
          * @type {Map}
          */
-        this.graphToDepsMap = GraphResolver.makeGraphToDepsMap(graph)
+        this.graphToDepsMap = GraphResolver.makeNodeToDepsMap(graph)
 
         /**
          * Stack of nodes
@@ -164,17 +164,17 @@ class GraphResolver {
      * @param {Graph} graph
      * @returns {Map}
      */
-    static makeGraphToDepsMap(graph) {
+    static makeNodeToDepsMap(graph) {
 
-        const graphToDepsMap = new Map()
+        const nodeToDepsMap = new Map()
 
         for (const item of graph) {
 
-            graphToDepsMap.set(item.node, item.deps)
+            nodeToDepsMap.set(item.node, item.deps)
 
         }
 
-        return graphToDepsMap
+        return nodeToDepsMap
 
     }
 
