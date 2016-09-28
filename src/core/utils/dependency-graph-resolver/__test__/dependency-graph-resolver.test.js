@@ -27,7 +27,15 @@ const e = new Node('e')
 const f = new Node('f')
 const g = new Node('g')
 
-test('Should resolve graph in a right order', t => {
+class A {}
+class B {}
+class C {}
+class D {}
+class E {}
+class F {}
+class G {}
+
+test('Should resolve graph if nodes ore objects', t => {
 
     const graph = [
         {
@@ -62,6 +70,82 @@ test('Should resolve graph in a right order', t => {
     const depsResolution = resolveDependencyGraph(graph)
 
     t.deepEqual(depsResolution, [ f, d, a, c, b, e, g ])
+
+})
+
+test('Should resolve graph if nodes are functions (classes)', t => {
+
+    const graph = [
+        {
+            node: A,
+            deps: [ D ],
+        },
+        {
+            node: B,
+            deps: [ A, C, F ],
+        },
+        {
+            node: C,
+            deps: [ D, A ],
+        },
+        {
+            node: D,
+            deps: [],
+        },
+        {
+            node: E,
+            deps: [ B, F ],
+        },
+        {
+            node: F,
+            deps: [],
+        },
+        {
+            node: G,
+            deps: [ E ],
+        },
+    ]
+    const depsResolution = resolveDependencyGraph(graph)
+
+    t.deepEqual(depsResolution, [ F, D, A, C, B, E, G ])
+
+})
+
+test('Should resolve graph if nodes are strings', t => {
+
+    const graph = [
+        {
+            node: 'A',
+            deps: [ 'D' ],
+        },
+        {
+            node: 'B',
+            deps: [ 'A', 'C', 'F' ],
+        },
+        {
+            node: 'C',
+            deps: [ 'D', 'A' ],
+        },
+        {
+            node: 'D',
+            deps: [],
+        },
+        {
+            node: 'E',
+            deps: [ 'B', 'F' ],
+        },
+        {
+            node: 'F',
+            deps: [],
+        },
+        {
+            node: 'G',
+            deps: [ 'E' ],
+        },
+    ]
+    const depsResolution = resolveDependencyGraph(graph)
+
+    t.deepEqual(depsResolution, [ 'F', 'D', 'A', 'C', 'B', 'E', 'G' ])
 
 })
 

@@ -195,10 +195,11 @@ class GraphResolver {
         }
 
         const nodes = new Set()
+        const allowedNodeTypes = [ 'object', 'function', 'string', 'number' ]
 
         for (const item of graph) {
 
-            if (typeof item.node !== 'object' || Array.isArray(item.deps) === false) {
+            if (allowedNodeTypes.includes(typeof item.node) === false || Array.isArray(item.deps) === false) {
 
                 throw new Error('Every graph item should have valid "node" and "deps" properties')
 
