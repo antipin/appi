@@ -1,5 +1,6 @@
 /**
  * Enhanced base Error class that supports code and name properties.
+ * @extends Error
  */
 export class AppiError extends Error {
 
