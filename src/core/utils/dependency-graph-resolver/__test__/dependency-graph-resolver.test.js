@@ -315,7 +315,7 @@ test('Should throw if some nodes defined more than once', t => {
 
 })
 
-test.failing('Should throw if some dependencies refers to not defined nodes', t => {
+test('Should throw if some dependencies refers to not defined nodes', t => {
 
     const graph = [
         {
@@ -332,7 +332,7 @@ test.failing('Should throw if some dependencies refers to not defined nodes', t 
 
     } catch (err) {
 
-        t.is(err.message, 'Some of dependencies refers to not defined nodes')
+        t.is(err.message, 'Graph node (d) used as a dependency, but not declared')
 
     }
 

@@ -199,7 +199,7 @@ class GraphResolver {
      * Builds a map of nodes to its dependencies
      * @param {Graph} graph
      * @throws {GraphError} if graph is not an Array
-     * @throws {GraphError} if any graph item is not valid
+     * @throws {GraphError} if any graph graphItem is not valid
      * @throws {GraphError} if any node defined more than once
      * @returns {void}
      * @private
@@ -213,23 +213,41 @@ class GraphResolver {
         }
 
         const nodes = new Set()
+        const deps = new Set()
         const allowedNodeTypes = [ 'object', 'function', 'string', 'number' ]
 
-        for (const item of graph) {
+        for (const graphItem of graph) {
 
-            if (allowedNodeTypes.includes(typeof item.node) === false || Array.isArray(item.deps) === false) {
+            if (allowedNodeTypes.includes(typeof graphItem.node) === false || Array.isArray(graphItem.deps) === false) {
 
                 throw new GraphError('Every graph item should have valid "node" and "deps" properties')
 
             }
 
-            if (nodes.has(item.node)) {
+            if (nodes.has(graphItem.node)) {
 
-                throw new GraphError(`Graph node ${item.node.toString()} defined more than once`)
+                throw new GraphError(`Graph node ${graphItem.node.toString()} defined more than once`)
 
             }
 
-            nodes.add(item.node)
+            nodes.add(graphItem.node)
+
+            for (const dependency of graphItem.deps) {
+
+                deps.add(dependency)
+
+            }
+
+        }
+
+        // Check that all dependencies are declared as nodes
+        for (const dependency of deps) {
+
+            if (nodes.has(dependency) === false) {
+
+                throw new GraphError(`Graph node ${dependency.toString()} used as a dependency, but not declared`)
+
+            }
 
         }
 
