@@ -1,3 +1,5 @@
+import { AppiComponent } from '../..'
+
 /* eslint-disable require-jsdoc */
 
 export const carService = { name: 'Car' }
@@ -6,8 +8,10 @@ export const wheelsService = { name: 'Wheels' }
 export const lightsService = { name: 'Lights' }
 export const unstartableService = { name: 'Unstartable' }
 export const unstopableService = { name: 'Unstopable' }
+export const functionComponentService = { name: 'FunctionComponentService' }
+export const simpleObjectComponent = { name: 'simpleObjectComponent' }
 
-export class Car {
+export class Car extends AppiComponent {
 
     make() {
 
@@ -35,7 +39,7 @@ export class Car {
 
 }
 
-export class Engine {
+export class Engine extends AppiComponent {
 
     make() {
 
@@ -63,7 +67,7 @@ export class Engine {
 
 }
 
-export class Wheels {
+export class Wheels extends AppiComponent {
 
     make() {
 
@@ -91,7 +95,7 @@ export class Wheels {
 
 }
 
-export class Lights {
+export class Lights extends AppiComponent {
 
     make() {
 
@@ -107,7 +111,7 @@ export class Lights {
 
 }
 
-export class UnmakablePart {
+export class UnmakablePart extends AppiComponent {
 
     make() {
 
@@ -133,7 +137,7 @@ export class UnmakablePart {
 
 }
 
-export class UnstartablePart {
+export class UnstartablePart extends AppiComponent {
 
     make() {
 
@@ -161,7 +165,7 @@ export class UnstartablePart {
 
 }
 
-export class UnstopablePart {
+export class UnstopablePart extends AppiComponent {
 
     make() {
 
@@ -186,6 +190,12 @@ export class UnstopablePart {
         return new Promise((resolve, reject) => setTimeout(() => reject(new Error()), 15))
 
     }
+
+}
+
+export function functionComponent() {
+
+    return functionComponentService
 
 }
 

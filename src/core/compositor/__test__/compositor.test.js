@@ -2,95 +2,59 @@ import test from 'ava'
 import sinon from 'sinon'
 import { compose } from '../'
 import {
-    Wheels, Engine, Lights, Car, UnstopablePart, UnstartablePart, UnmakablePart,
-    engineService, wheelsService } from './test-components'
+    Wheels, Engine, Lights, Car, engineService, wheelsService,
+    UnstopablePart, UnstartablePart, UnmakablePart,
+    functionComponent, simpleObjectComponent } from './test-components'
 
 /* eslint-disable require-jsdoc */
 
-test('Should throw if declaration.component is not specified', async t => {
+const spyOnClasses = [ Car, Engine, Wheels ]
+const spyOnMethods = [ 'make', 'start', 'stop' ]
 
-    try {
+test.beforeEach(() => {
 
-        await compose([ { deps: [] } ])
+    for (const spiedClass of spyOnClasses) {
 
-        t.fail()
+        for (const spiedMethod of spyOnMethods) {
 
-    } catch (err) {
+            sinon.spy(spiedClass.prototype, spiedMethod)
 
-        t.is(err.name, 'ValidationError')
-        t.true(err.message.includes('[child "component" fails because ["component" is required]]'))
+        }
 
     }
 
 })
 
-test('Should throw if any of the component`s deps is not a component itself', async t => {
+test.afterEach.always(() => {
 
-    class Component {
+    for (const spiedClass of spyOnClasses) {
 
-        make() {}
+        for (const spiedMethod of spyOnMethods) {
+
+            spiedClass.prototype[spiedMethod].restore()
+
+        }
 
     }
+
+})
+
+test.serial('Should compose an app if graph component declaration is valid', async t => {
 
     try {
 
         await compose([
             {
-                component: Component,
-                deps: [ { someWrongProperty: 'ololo' } ],
-            }
-        ])
-
-        t.fail()
-
-    } catch (err) {
-
-        t.is(err.name, 'ValidationError')
-        t.true(err.message.includes('["deps" at position 0 fails because ["0" must be a Function]]'))
-
-    }
-
-})
-
-test('Should throw if deps is omitted', async t => {
-
-    class Component {
-
-        make() {}
-
-    }
-
-    try {
-
-        await compose([ { component: Component } ])
-
-        t.fail()
-
-    } catch (err) {
-
-        t.true(err.message.includes('[child "deps" fails because ["deps" is required]]'))
-
-    }
-
-})
-
-test('Should not throw if component declaration is correct', async t => {
-
-    class Component {
-
-        make() {}
-
-        start() {}
-
-        stop() {}
-
-    }
-
-    try {
-
-        await compose([
+                component: Wheels,
+                deps: []
+            },
             {
-                component: Component,
+                component: functionComponent,
+                deps: []
+            },
+            {
+                component: simpleObjectComponent,
+                name: 'simpleObjectComponent',
                 deps: []
             }
         ])
@@ -105,11 +69,70 @@ test('Should not throw if component declaration is correct', async t => {
 
 })
 
-test('compose function should compose an app', async t => {
+test.serial('Should throw if any of names is not unique', async t => {
 
-    sinon.spy(Car.prototype, 'make')
-    sinon.spy(Engine.prototype, 'make')
-    sinon.spy(Wheels.prototype, 'make')
+    try {
+
+        await compose([
+            {
+                component: Wheels,
+                deps: []
+            },
+            {
+                component: functionComponent,
+                deps: []
+            },
+            {
+                component: simpleObjectComponent,
+                name: 'Wheels',
+                deps: []
+            }
+        ])
+
+        t.fail()
+
+    } catch (err) {
+
+        t.is(err.message, 'Dependency graph item name "Wheels" is not unique')
+
+    }
+
+})
+
+test.serial('Should throw if declaration.component is not specified', async t => {
+
+    try {
+
+        await compose([ { deps: [] } ])
+
+        t.fail()
+
+    } catch (err) {
+
+        t.is(err.name, 'AppError')
+        t.true(err.message.includes('[child "component" fails because ["component" is required]]'))
+
+    }
+
+})
+
+test.serial('Should throw if deps is omitted', async t => {
+
+    try {
+
+        await compose([ { component: Wheels } ])
+
+        t.fail()
+
+    } catch (err) {
+
+        t.true(err.message.includes('[child "deps" fails because ["deps" is required]]'))
+
+    }
+
+})
+
+test.serial('Should call components make methods with correspondent dependencies', async t => {
 
     try {
 
@@ -140,11 +163,7 @@ test('compose function should compose an app', async t => {
 
 })
 
-test('App should start all components in the right order', async t => {
-
-    sinon.spy(Car.prototype, 'start')
-    sinon.spy(Engine.prototype, 'start')
-    sinon.spy(Wheels.prototype, 'start')
+test.serial('App should start all components in the right order', async t => {
 
     try {
 
@@ -179,11 +198,7 @@ test('App should start all components in the right order', async t => {
 
 })
 
-test('App should stop all components in the right (backwards) order', async t => {
-
-    sinon.spy(Car.prototype, 'stop')
-    sinon.spy(Engine.prototype, 'stop')
-    sinon.spy(Wheels.prototype, 'stop')
+test.serial('App should stop all components in the right (backwards) order', async t => {
 
     try {
 
@@ -219,7 +234,7 @@ test('App should stop all components in the right (backwards) order', async t =>
 
 })
 
-test('App should not throw when it starts/stops if some of components has no start/stop method', async t => {
+test.serial('App should not throw when it starts/stops if some of components has no start/stop method', async t => {
 
     try {
 
@@ -255,7 +270,7 @@ test('App should not throw when it starts/stops if some of components has no sta
 
 })
 
-test('App should throw if any of the component throws when make', async t => {
+test.serial('App should throw if any of the component throws when make', async t => {
 
     try {
 
@@ -293,7 +308,7 @@ test('App should throw if any of the component throws when make', async t => {
 
 })
 
-test('App should throw if any of the component throws when start', async t => {
+test.serial('App should throw if any of the component throws when start', async t => {
 
     try {
 
@@ -333,7 +348,7 @@ test('App should throw if any of the component throws when start', async t => {
 
 })
 
-test('App should throw if any of the component throws when stop', async t => {
+test.serial('App should throw if any of the component throws when stop', async t => {
 
     try {
 
@@ -368,42 +383,6 @@ test('App should throw if any of the component throws when stop', async t => {
     } catch (err) {
 
         t.is(err.message, 'Component "UnstopablePart" failed while stop attempt')
-        t.is(err.code, 'COMPONENT_STOP_FAILED')
-
-    }
-
-})
-
-test.failing('App should throw when trying to stop it without start', async t => {
-
-    try {
-
-        const app = await compose([
-            {
-                component: Wheels,
-                deps: [],
-            },
-            {
-                component: Engine,
-                deps: [ Wheels, Lights ],
-            },
-            {
-                component: Lights,
-                deps: [ Wheels ],
-            },
-            {
-                component: Car,
-                deps: [ Wheels, Engine ],
-            },
-        ])
-
-        await app.stop()
-
-        t.fail()
-
-    } catch (err) {
-
-        t.is(err.message, 'Can not stop an app that was not started.')
         t.is(err.code, 'COMPONENT_STOP_FAILED')
 
     }
