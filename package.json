@@ -4,8 +4,8 @@
   "description": "Unopinionated modular framwork for server applications",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/babel ./src --out-dir dist --copy-files",
-    "build:dev": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --watch",
+    "build": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --ignore **/node_modules/**/*.js",
+    "build:dev": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --ignore **/node_modules/**/*.js --watch ",
     "test-unit": "./node_modules/.bin/ava src/**/*.test.js",
     "test-unit:dev": "npm run test-unit -- --watch",
     "lint": "./node_modules/.bin/prelint"
