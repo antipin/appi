@@ -389,4 +389,42 @@ test.serial('App should throw if any of the component throws when stop', async t
 
 })
 
+test.serial('App#isComposed shoul return true if compose invoked succesfully', async t => {
+
+    const app = await compose([
+        {
+            component: functionComponent,
+            deps: []
+        },
+        {
+            component: simpleObjectComponent,
+            name: 'simpleObjectComponent',
+            deps: [ functionComponent ]
+        },
+        {
+            component: Wheels,
+            deps: [ simpleObjectComponent ],
+        },
+        {
+            component: UnstopablePart,
+            deps: [ Wheels ],
+        },
+        {
+            component: Engine,
+            deps: [ Wheels, Lights ],
+        },
+        {
+            component: Lights,
+            deps: [ Wheels, UnstopablePart ],
+        },
+        {
+            component: Car,
+            deps: [ Wheels, Engine ],
+        },
+    ])
+
+    t.true(app.isComposed)
+
+})
+
 /* eslint-enable */

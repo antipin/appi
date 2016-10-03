@@ -146,7 +146,7 @@ class App {
      */
     get isComposed() {
 
-        return this.componentToInstanceMap.size === this.resolvedComponents.length
+        return this.componentToGraphItemMap.size === this.resolvedComponents.length
 
     }
 
@@ -158,7 +158,7 @@ class App {
 
         if (this.isComposed === false) {
 
-            throw new AppError('Can not start an app that was not composed.')
+            throw new AppError('Can not start an app that was not composed')
 
         }
 
