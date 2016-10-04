@@ -195,7 +195,7 @@ class App {
                 } catch (err) {
 
                     throw new AppError(
-                        `Component "${component.name}" failed while start attempt`,
+                        `Component "${component.name}" failed while start attempt with error: "${err.message}"`,
                         AppError.COMPONENT_START_FAILED
                     )
 
@@ -235,7 +235,7 @@ class App {
                 } catch (err) {
 
                     throw new AppError(
-                        `Component "${component.name}" failed while stop attempt`,
+                        `Component "${component.name}" failed while stop attempt with error: "${err.message}"`,
                         AppError.COMPONENT_STOP_FAILED
                     )
 

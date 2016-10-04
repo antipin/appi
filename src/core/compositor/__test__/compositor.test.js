@@ -353,7 +353,7 @@ test.serial('App should throw if any of the component throws when start', async 
 
     } catch (err) {
 
-        t.is(err.message, 'Component "UnstartablePart" failed while start attempt')
+        t.true(err.message.startsWith('Component "UnstartablePart" failed while start attempt with error:'))
         t.is(err.code, 'COMPONENT_START_FAILED')
 
     }
@@ -394,7 +394,7 @@ test.serial('App should throw if any of the component throws when stop', async t
 
     } catch (err) {
 
-        t.is(err.message, 'Component "UnstopablePart" failed while stop attempt')
+        t.true(err.message.startsWith('Component "UnstopablePart" failed while stop attempt with error:'))
         t.is(err.code, 'COMPONENT_STOP_FAILED')
 
     }
