@@ -3,8 +3,8 @@ import sinon from 'sinon'
 import { compose } from '../'
 import {
     Wheels, Engine, Lights, Car, engineService, wheelsService,
-    UnstopablePart, UnstartablePart, UnmakablePart,
-    functionComponent, simpleObjectComponent } from './test-components'
+    UnstopablePart, UnstartablePart, UnmakablePart, appiFunctionComponentService,
+    appiFunctionComponent, functionComponent, simpleObjectComponent } from './test-components'
 
 /* eslint-disable require-jsdoc */
 
@@ -136,6 +136,8 @@ test.serial('Should call components make methods with correspondent dependencies
 
     try {
 
+        const spiedAppiFunctionComponent = sinon.spy(appiFunctionComponent)
+
         await compose([
             {
                 component: Wheels,
@@ -146,13 +148,23 @@ test.serial('Should call components make methods with correspondent dependencies
                 deps: [ Wheels ],
             },
             {
+                component: spiedAppiFunctionComponent,
+                name: 'AppiFunctionComponent',
+                deps: [ Wheels ],
+            },
+            {
                 component: Car,
-                deps: [ Wheels, Engine ],
+                deps: [ Wheels, Engine, spiedAppiFunctionComponent ],
             },
         ])
 
-        t.true(Car.prototype.make.calledWithExactly({ Engine: engineService, Wheels: wheelsService }))
+        t.true(Car.prototype.make.calledWithExactly({
+            Engine: engineService,
+            Wheels: wheelsService,
+            AppiFunctionComponent: appiFunctionComponentService
+        }))
         t.true(Engine.prototype.make.calledWithExactly({ Wheels: wheelsService }))
+        t.true(spiedAppiFunctionComponent.calledWithExactly({ Wheels: wheelsService }))
         t.true(Wheels.prototype.make.calledWithExactly({}))
 
     } catch (err) {
@@ -301,7 +313,7 @@ test.serial('App should throw if any of the component throws when make', async t
 
     } catch (err) {
 
-        t.is(err.message, 'Component "UnmakablePart" failed while initializing')
+        t.true(err.message.startsWith('Component "UnmakablePart" failed while initializing with error:'))
         t.is(err.code, 'COMPONENT_INITIALIZATION_FAILED')
 
     }

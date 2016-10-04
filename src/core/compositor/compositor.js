@@ -1,6 +1,5 @@
 import joi from 'joi'
-import { resolveDependencyGraph } from '../utils/dependency-graph-resolver'
-import { AppiError, AppiComponent } from '../'
+import { resolveDependencyGraph, AppiError, AppiComponent } from '../'
 
 /**
  * @typedef {Function} Component
@@ -23,6 +22,7 @@ import { AppiError, AppiComponent } from '../'
 class AppError extends AppiError {
 
     static DEPENDENCY_GRAPH_VALIDATION_FAILED = 'DEPENDENCY_GRAPH_VALIDATION_FAILED'
+    static DEPENDENCY_GRAPH_VALIDATION_FAILED = 'DEPENDENCY_GRAPH_VALIDATION_FAILED'
     static COMPONENT_INITIALIZATION_FAILED = 'COMPONENT_INITIALIZATION_FAILED'
     static COMPONENT_STOP_FAILED = 'COMPONENT_STOP_FAILED'
     static COMPONENT_START_FAILED = 'COMPONENT_START_FAILED'
@@ -36,6 +36,7 @@ class AppError extends AppiError {
 class App {
 
     static COMPONENT_TYPE_APPI_CLASS = Symbol('COMPONENT_TYPE_APPI_CLASS')
+    static COMPONENT_TYPE_APPI_FUNC = Symbol('COMPONENT_TYPE_APPI_FUNC')
     static COMPONENT_TYPE_DEFAULT = Symbol('COMPONENT_TYPE_DEFAULT')
     static COMPONENT_TYPE_UNSUPPORTED = Symbol('COMPONENT_TYPE_UNSUPPORTED')
 
@@ -112,7 +113,25 @@ class App {
                     } catch (err) {
 
                         throw new AppError(
-                            `Component "${component.name}" failed while initializing`,
+                            `Component "${component.name}" failed while initializing with error: "${err.message}"`,
+                            AppError.COMPONENT_INITIALIZATION_FAILED
+                        )
+
+                    }
+
+                    break
+
+                case App.COMPONENT_TYPE_APPI_FUNC:
+
+                    try {
+
+                        const componentResult = await component(dependenciesValues)
+                        componentToServiceMap.set(component, componentResult)
+
+                    } catch (err) {
+
+                        throw new AppError(
+                            `Component "${component.name}" failed while initializing with error: "${err.message}"`,
                             AppError.COMPONENT_INITIALIZATION_FAILED
                         )
 
@@ -324,6 +343,10 @@ class App {
         if (component.prototype instanceof AppiComponent) {
 
             return App.COMPONENT_TYPE_APPI_CLASS
+
+        } else if (typeof component === 'function' && component.isAppiComponent === true) {
+
+            return App.COMPONENT_TYPE_APPI_FUNC
 
         } else if (typeof component === 'function' || typeof component === 'object') {
 

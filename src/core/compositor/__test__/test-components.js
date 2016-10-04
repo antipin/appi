@@ -9,7 +9,18 @@ export const lightsService = { name: 'Lights' }
 export const unstartableService = { name: 'Unstartable' }
 export const unstopableService = { name: 'Unstopable' }
 export const functionComponentService = { name: 'FunctionComponentService' }
+export const appiFunctionComponentService = { name: 'AppiFunctionComponentService' }
 export const simpleObjectComponent = { name: 'simpleObjectComponent' }
+
+function appiFunctionComponent() {
+
+    return new Promise((resolve) => setTimeout(() => resolve(appiFunctionComponentService), 30))
+
+}
+
+appiFunctionComponent.isAppiComponent = true
+
+export { appiFunctionComponent }
 
 export class Car extends AppiComponent {
 
