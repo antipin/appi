@@ -57,11 +57,18 @@ class App {
         this.componentToInstanceMap = new Map()
 
         /**
-         * Helper structure that maps components constructors to its service
+         * Helper structure that maps components to its service
          * @type {Map}
          * @private
          */
         this.componentToServiceMap = new Map()
+
+        /**
+         * Helper structure that maps components' name to its service
+         * @type {Map}
+         * @private
+         */
+        this.componentNameToServiceMap = new Map()
 
         /**
          * Helper structure that maps components to its GraphItem
@@ -87,7 +94,7 @@ class App {
      */
     async compose() {
 
-        const { resolvedComponents, componentToInstanceMap, componentToServiceMap } = this
+        const { resolvedComponents, componentToInstanceMap, componentToServiceMap, componentNameToServiceMap } = this
 
         // We should initialize all components. Here we have components in the right (resolved) order,
         // so we can initialize it one by one
@@ -95,6 +102,7 @@ class App {
 
             const dependenciesValues = this.extractDependenciesValues(component)
             const componentType = App.detectComponentType(component)
+            const componentName = this.getComponentName(component)
 
             switch (componentType) {
 
@@ -108,6 +116,7 @@ class App {
                         await componentInstance.make(dependenciesValues)
                         componentToInstanceMap.set(component, componentInstance)
                         componentToServiceMap.set(component, componentInstance.service)
+                        componentNameToServiceMap.set(componentName, componentInstance.service)
 
                     } catch (err) {
 
@@ -126,6 +135,7 @@ class App {
 
                         const componentResult = await component(dependenciesValues)
                         componentToServiceMap.set(component, componentResult)
+                        componentNameToServiceMap.set(componentName, componentResult)
 
                     } catch (err) {
 
@@ -142,6 +152,7 @@ class App {
 
                     // Saving service of current component for next components
                     componentToServiceMap.set(component, component)
+                    componentToServiceMap.set(componentName, component)
 
                     break
 
@@ -155,16 +166,6 @@ class App {
             }
 
         }
-
-    }
-
-    /**
-     * Detects if app is composed
-     * @returns {boolean}
-     */
-    get isComposed() {
-
-        return this.componentToGraphItemMap.size === this.resolvedComponents.length
 
     }
 
@@ -244,6 +245,27 @@ class App {
             }
 
         }
+
+    }
+
+    /**
+     * Returns service instance by component name
+     * @param {string} componentName
+     * @returns {Object}
+     */
+    getService(componentName) {
+
+        return this.componentNameToServiceMap.get(componentName)
+
+    }
+
+    /**
+     * Detects if app is composed
+     * @returns {boolean}
+     */
+    get isComposed() {
+
+        return this.componentToGraphItemMap.size === this.resolvedComponents.length
 
     }
 
@@ -333,6 +355,19 @@ class App {
     }
 
     /**
+     * Returns component name by component object
+     * @param {Any} component
+     * @returns {string}
+     */
+    getComponentName(component) {
+
+        const graphItem = this.componentToGraphItemMap.get(component)
+
+        return graphItem.name
+
+    }
+
+    /**
      * Detects component type
      * @param {Any} component
      * @returns {Symbol}
@@ -385,7 +420,7 @@ class App {
      * Extracts name from graph item. First we try to get name from graphItem "name" property,
      * if it's empty and component is a function/class we are using Function.name
      * @param {ComponentsGraphItem} graphItem
-     * @param {number} index graph item index in graph array
+     * @param {number} [index] graph item index in graph array
      * @returns {string}
      */
     static extractNameFromGraphItem(graphItem, index = -1) {
