@@ -2,54 +2,51 @@ import test from 'ava'
 import sinon from 'sinon'
 import { compose } from '../'
 import {
-    Wheels, Engine, Lights, Car, engineService, wheelsService,
-    UnstopablePart, UnstartablePart, UnmakablePart, appiFunctionComponentService,
+    Car, Wheels, Engine, Lights, engineService, wheelsService, lightsService,
+    unstoppablePart, unstartablePart, unmakablePart, appiFunctionComponentService,
     appiFunctionComponent, functionComponent, simpleObjectComponent } from './test-components'
 
 /* eslint-disable require-jsdoc */
 
-const spyOnClasses = [ Car, Engine, Wheels ]
-const spyOnMethods = [ 'make', 'start', 'stop' ]
+function createCarGroupComponnets() {
 
-test.beforeEach(() => {
+    const car = new Car()
+    const wheels = new Wheels()
+    const engine = new Engine()
+    const lights = new Lights()
 
-    for (const spiedClass of spyOnClasses) {
+    for (const spiedObject of [ car, engine, wheels, lights ]) {
 
-        for (const spiedMethod of spyOnMethods) {
+        for (const spiedMethod of [ 'make', 'start', 'stop' ]) {
 
-            sinon.spy(spiedClass.prototype, spiedMethod)
+            if (typeof spiedObject[spiedMethod] === 'function') {
 
-        }
+                sinon.spy(spiedObject, spiedMethod)
 
-    }
-
-})
-
-test.afterEach.always(() => {
-
-    for (const spiedClass of spyOnClasses) {
-
-        for (const spiedMethod of spyOnMethods) {
-
-            spiedClass.prototype[spiedMethod].restore()
+            }
 
         }
 
     }
 
-})
+    return { car, wheels, engine, lights }
 
-test.serial('Should compose an app if graph component declaration is valid', async t => {
+}
+
+test('Should compose an app if graph component declaration is valid', async t => {
+
+    const { wheels } = createCarGroupComponnets()
 
     try {
 
         await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: []
             },
             {
                 component: functionComponent,
+                name: 'functionComponent',
                 deps: []
             },
             {
@@ -69,22 +66,25 @@ test.serial('Should compose an app if graph component declaration is valid', asy
 
 })
 
-test.serial('Should throw if any of names is not unique', async t => {
+test('Should throw if any of names is not unique', async t => {
+
+    const { wheels } = createCarGroupComponnets()
 
     try {
 
         await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: []
             },
             {
                 component: functionComponent,
+                name: 'functionComponent',
                 deps: []
             },
             {
                 component: simpleObjectComponent,
-                name: 'Wheels',
+                name: 'wheels',
                 deps: []
             }
         ])
@@ -93,13 +93,13 @@ test.serial('Should throw if any of names is not unique', async t => {
 
     } catch (err) {
 
-        t.is(err.message, 'Dependency graph item name "Wheels" is not unique')
+        t.is(err.message, 'Dependency graph item name "wheels" is not unique')
 
     }
 
 })
 
-test.serial('Should throw if declaration.component is not specified', async t => {
+test('Should throw if declaration.component is not specified', async t => {
 
     try {
 
@@ -116,11 +116,13 @@ test.serial('Should throw if declaration.component is not specified', async t =>
 
 })
 
-test.serial('Should throw if deps is omitted', async t => {
+test('Should throw if deps is omitted', async t => {
+
+    const { wheels } = createCarGroupComponnets()
 
     try {
 
-        await compose([ { component: Wheels } ])
+        await compose([ { component: wheels } ])
 
         t.fail()
 
@@ -132,7 +134,9 @@ test.serial('Should throw if deps is omitted', async t => {
 
 })
 
-test.serial('Should call components make methods with correspondent dependencies', async t => {
+test('Should call components make methods with correspondent dependencies', async t => {
+
+    const { car, wheels, engine, lights } = createCarGroupComponnets()
 
     try {
 
@@ -140,32 +144,36 @@ test.serial('Should call components make methods with correspondent dependencies
 
         await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: [],
             },
             {
-                component: Engine,
-                deps: [ Wheels ],
+                component: engine,
+                deps: [ wheels ],
             },
             {
                 component: spiedAppiFunctionComponent,
-                name: 'AppiFunctionComponent',
-                deps: [ Wheels ],
+                deps: [ wheels ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine, spiedAppiFunctionComponent ],
+                component: lights,
+                deps:[],
+            },
+            {
+                component: car,
+                deps: [ wheels, engine, spiedAppiFunctionComponent, lights ],
             },
         ])
 
-        t.true(Car.prototype.make.calledWithExactly({
-            Engine: engineService,
-            Wheels: wheelsService,
-            AppiFunctionComponent: appiFunctionComponentService
+        t.true(car.make.calledWithExactly({
+            engine: engineService,
+            wheels: wheelsService,
+            appiFunctionComponent: appiFunctionComponentService,
+            lights: lightsService
         }))
-        t.true(Engine.prototype.make.calledWithExactly({ Wheels: wheelsService }))
-        t.true(spiedAppiFunctionComponent.calledWithExactly({ Wheels: wheelsService }))
-        t.true(Wheels.prototype.make.calledWithExactly({}))
+        t.true(engine.make.calledWithExactly({ wheels: wheelsService }))
+        t.true(spiedAppiFunctionComponent.calledWithExactly({ wheels: wheelsService }))
+        t.true(wheels.make.calledWithExactly({}))
 
     } catch (err) {
 
@@ -175,31 +183,37 @@ test.serial('Should call components make methods with correspondent dependencies
 
 })
 
-test.serial('App should start all components in the right order', async t => {
+test('App should start all components in the right order', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     try {
 
         const app = await compose([
             {
-                component: Wheels,
+                component: lights,
                 deps: [],
             },
             {
-                component: Engine,
-                deps: [ Wheels ],
+                component: wheels,
+                deps: [ lights ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine ],
+                component: engine,
+                deps: [ wheels, lights ],
+            },
+            {
+                component: car,
+                deps: [ wheels, engine ],
             },
         ])
 
         await app.start()
 
         sinon.assert.callOrder(
-            Wheels.prototype.start,
-            Engine.prototype.start,
-            Car.prototype.start,
+            wheels.start,
+            engine.start,
+            car.start,
         )
 
     } catch (err) {
@@ -210,22 +224,28 @@ test.serial('App should start all components in the right order', async t => {
 
 })
 
-test.serial('App should stop all components in the right (backwards) order', async t => {
+test('App should stop all components in the right (backwards) order', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     try {
 
         const app = await compose([
             {
-                component: Wheels,
+                component: lights,
                 deps: [],
             },
             {
-                component: Engine,
-                deps: [ Wheels ],
+                component: wheels,
+                deps: [ lights ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine ],
+                component: engine,
+                deps: [ wheels ],
+            },
+            {
+                component: car,
+                deps: [ wheels, engine ],
             },
         ])
 
@@ -233,9 +253,9 @@ test.serial('App should stop all components in the right (backwards) order', asy
         await app.stop()
 
         sinon.assert.callOrder(
-            Car.prototype.stop,
-            Engine.prototype.stop,
-            Wheels.prototype.stop,
+            car.stop,
+            engine.stop,
+            wheels.stop,
         )
 
     } catch (err) {
@@ -246,26 +266,28 @@ test.serial('App should stop all components in the right (backwards) order', asy
 
 })
 
-test.serial('App should not throw when it starts/stops if some of components has no start/stop method', async t => {
+test('App should not throw when it starts/stops if some of components has no start/stop method', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     try {
 
         const app = await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: [],
             },
             {
-                component: Engine,
-                deps: [ Wheels, Lights ],
+                component: engine,
+                deps: [ wheels, lights ],
             },
             {
-                component: Lights,
-                deps: [ Wheels ],
+                component: lights,
+                deps: [ wheels ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine ],
+                component: car,
+                deps: [ wheels, engine ],
             },
         ])
 
@@ -282,30 +304,32 @@ test.serial('App should not throw when it starts/stops if some of components has
 
 })
 
-test.serial('App should throw if any of the component throws when make', async t => {
+test('App should throw if any of the component throws when make', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     try {
 
         await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: [],
             },
             {
-                component: UnmakablePart,
-                deps: [ Wheels ],
+                component: unmakablePart,
+                deps: [ wheels ],
             },
             {
-                component: Engine,
-                deps: [ Wheels, Lights ],
+                component: engine,
+                deps: [ wheels, lights ],
             },
             {
-                component: Lights,
-                deps: [ Wheels, UnmakablePart ],
+                component: lights,
+                deps: [ wheels, unmakablePart ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine ],
+                component: car,
+                deps: [ wheels, engine ],
             },
         ])
 
@@ -313,37 +337,39 @@ test.serial('App should throw if any of the component throws when make', async t
 
     } catch (err) {
 
-        t.true(err.message.startsWith('Component "UnmakablePart" failed while initializing with error:'))
+        t.true(err.message.startsWith('Component "unmakablePart" failed while initializing with error:'))
         t.is(err.code, 'COMPONENT_INITIALIZATION_FAILED')
 
     }
 
 })
 
-test.serial('App should throw if any of the component throws when start', async t => {
+test('App should throw if any of the component throws when start', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     try {
 
         const app = await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: [],
             },
             {
-                component: UnstartablePart,
-                deps: [ Wheels ],
+                component: unstartablePart,
+                deps: [ wheels ],
             },
             {
-                component: Engine,
-                deps: [ Wheels, Lights ],
+                component: engine,
+                deps: [ wheels, lights ],
             },
             {
-                component: Lights,
-                deps: [ Wheels, UnstartablePart ],
+                component: lights,
+                deps: [ wheels, unstartablePart ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine ],
+                component: car,
+                deps: [ wheels, engine ],
             },
         ])
 
@@ -353,37 +379,39 @@ test.serial('App should throw if any of the component throws when start', async 
 
     } catch (err) {
 
-        t.true(err.message.startsWith('Component "UnstartablePart" failed while start attempt with error:'))
+        t.true(err.message.startsWith('Component "unstartablePart" failed while start attempt with error:'))
         t.is(err.code, 'COMPONENT_START_FAILED')
 
     }
 
 })
 
-test.serial('App should throw if any of the component throws when stop', async t => {
+test('App should throw if any of the component throws when stop', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     try {
 
         const app = await compose([
             {
-                component: Wheels,
+                component: wheels,
                 deps: [],
             },
             {
-                component: UnstopablePart,
-                deps: [ Wheels ],
+                component: unstoppablePart,
+                deps: [ wheels ],
             },
             {
-                component: Engine,
-                deps: [ Wheels, Lights ],
+                component: engine,
+                deps: [ wheels, lights ],
             },
             {
-                component: Lights,
-                deps: [ Wheels, UnstopablePart ],
+                component: lights,
+                deps: [ wheels, unstoppablePart ],
             },
             {
-                component: Car,
-                deps: [ Wheels, Engine ],
+                component: car,
+                deps: [ wheels, engine ],
             },
         ])
 
@@ -394,18 +422,21 @@ test.serial('App should throw if any of the component throws when stop', async t
 
     } catch (err) {
 
-        t.true(err.message.startsWith('Component "UnstopablePart" failed while stop attempt with error:'))
+        t.true(err.message.startsWith('Component "unstoppablePart" failed while stop attempt with error:'))
         t.is(err.code, 'COMPONENT_STOP_FAILED')
 
     }
 
 })
 
-test.serial('App#isComposed shoul return true if compose invoked succesfully', async t => {
+test('App#isComposed should return true if compose invoked successfully', async t => {
+
+    const { lights, car, wheels, engine } = createCarGroupComponnets()
 
     const app = await compose([
         {
             component: functionComponent,
+            name: 'functionComponent',
             deps: []
         },
         {
@@ -414,24 +445,24 @@ test.serial('App#isComposed shoul return true if compose invoked succesfully', a
             deps: [ functionComponent ]
         },
         {
-            component: Wheels,
+            component: wheels,
             deps: [ simpleObjectComponent ],
         },
         {
-            component: UnstopablePart,
-            deps: [ Wheels ],
+            component: unstoppablePart,
+            deps: [ wheels ],
         },
         {
-            component: Engine,
-            deps: [ Wheels, Lights ],
+            component: engine,
+            deps: [ wheels, lights ],
         },
         {
-            component: Lights,
-            deps: [ Wheels, UnstopablePart ],
+            component: lights,
+            deps: [ wheels, unstoppablePart ],
         },
         {
-            component: Car,
-            deps: [ Wheels, Engine ],
+            component: car,
+            deps: [ wheels, engine ],
         },
     ])
 

@@ -12,17 +12,9 @@ export const functionComponentService = { name: 'FunctionComponentService' }
 export const appiFunctionComponentService = { name: 'AppiFunctionComponentService' }
 export const simpleObjectComponent = { name: 'simpleObjectComponent' }
 
-function appiFunctionComponent() {
+class Car extends AppiComponent {
 
-    return new Promise((resolve) => setTimeout(() => resolve(appiFunctionComponentService), 30))
-
-}
-
-appiFunctionComponent.isAppiComponent = true
-
-export { appiFunctionComponent }
-
-export class Car extends AppiComponent {
+    static componentName = 'car'
 
     make() {
 
@@ -50,7 +42,9 @@ export class Car extends AppiComponent {
 
 }
 
-export class Engine extends AppiComponent {
+class Engine extends AppiComponent {
+
+    static componentName = 'engine'
 
     make() {
 
@@ -78,7 +72,9 @@ export class Engine extends AppiComponent {
 
 }
 
-export class Wheels extends AppiComponent {
+class Wheels extends AppiComponent {
+
+    static componentName = 'wheels'
 
     make() {
 
@@ -106,7 +102,9 @@ export class Wheels extends AppiComponent {
 
 }
 
-export class Lights extends AppiComponent {
+class Lights extends AppiComponent {
+
+    static componentName = 'lights'
 
     make() {
 
@@ -122,7 +120,9 @@ export class Lights extends AppiComponent {
 
 }
 
-export class UnmakablePart extends AppiComponent {
+class UnmakablePart extends AppiComponent {
+
+    static componentName = 'unmakablePart'
 
     make() {
 
@@ -148,7 +148,9 @@ export class UnmakablePart extends AppiComponent {
 
 }
 
-export class UnstartablePart extends AppiComponent {
+class UnstartablePart extends AppiComponent {
+
+    static componentName = 'unstartablePart'
 
     make() {
 
@@ -176,7 +178,9 @@ export class UnstartablePart extends AppiComponent {
 
 }
 
-export class UnstopablePart extends AppiComponent {
+class UnstoppablePart extends AppiComponent {
+
+    static componentName = 'unstoppablePart'
 
     make() {
 
@@ -204,10 +208,28 @@ export class UnstopablePart extends AppiComponent {
 
 }
 
-export function functionComponent() {
+function functionComponent() {
 
     return functionComponentService
 
+}
+
+function appiFunctionComponent() {
+
+    return new Promise((resolve) => setTimeout(() => resolve(appiFunctionComponentService), 30))
+
+}
+
+appiFunctionComponent.componentName = 'appiFunctionComponent'
+
+const unmakablePart = new UnmakablePart()
+const unstartablePart = new UnstartablePart()
+const unstoppablePart = new UnstoppablePart()
+
+export {
+    appiFunctionComponent, functionComponent,
+    Car, Wheels, Engine, Lights,
+    unmakablePart, unstartablePart, unstoppablePart
 }
 
 /* eslint-enable */

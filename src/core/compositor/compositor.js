@@ -34,7 +34,7 @@ class AppError extends AppiError {
  */
 class App {
 
-    static COMPONENT_TYPE_APPI_CLASS = Symbol('COMPONENT_TYPE_APPI_CLASS')
+    static COMPONENT_TYPE_APPI_OBJECT = Symbol('COMPONENT_TYPE_APPI_OBJECT')
     static COMPONENT_TYPE_APPI_FUNC = Symbol('COMPONENT_TYPE_APPI_FUNC')
     static COMPONENT_TYPE_DEFAULT = Symbol('COMPONENT_TYPE_DEFAULT')
     static COMPONENT_TYPE_UNSUPPORTED = Symbol('COMPONENT_TYPE_UNSUPPORTED')
@@ -48,13 +48,6 @@ class App {
     constructor(graph) {
 
         App.validate(graph)
-
-        /**
-         * Helper structure that maps components constructors to its instance
-         * @type {Map}
-         * @private
-         */
-        this.componentToInstanceMap = new Map()
 
         /**
          * Helper structure that maps components to its service
@@ -94,7 +87,7 @@ class App {
      */
     async compose() {
 
-        const { resolvedComponents, componentToInstanceMap, componentToServiceMap, componentNameToServiceMap } = this
+        const { resolvedComponents, componentToServiceMap, componentNameToServiceMap } = this
 
         // We should initialize all components. Here we have components in the right (resolved) order,
         // so we can initialize it one by one
@@ -106,17 +99,14 @@ class App {
 
             switch (componentType) {
 
-                case App.COMPONENT_TYPE_APPI_CLASS:
+                case App.COMPONENT_TYPE_APPI_OBJECT:
 
                     try {
 
-                        const componentInstance = new component()
-
                         // Saving instance and value of current component for next components
-                        await componentInstance.make(dependenciesValues)
-                        componentToInstanceMap.set(component, componentInstance)
-                        componentToServiceMap.set(component, componentInstance.service)
-                        componentNameToServiceMap.set(componentName, componentInstance.service)
+                        await component.make(dependenciesValues)
+                        componentToServiceMap.set(component, component.service)
+                        componentNameToServiceMap.set(componentName, component.service)
 
                     } catch (err) {
 
@@ -181,17 +171,15 @@ class App {
 
         }
 
-        const { resolvedComponents, componentToInstanceMap } = this
+        const { resolvedComponents } = this
 
         for (const component of resolvedComponents) {
 
-            const componentInstance = componentToInstanceMap.get(component)
-
-            if (componentInstance && typeof componentInstance.start === 'function') {
+            if (component instanceof AppiComponent && typeof component.start === 'function') {
 
                 try {
 
-                    await componentInstance.start()
+                    await component.start()
 
                 } catch (err) {
 
@@ -220,18 +208,16 @@ class App {
 
         }
 
-        const { resolvedComponents, componentToInstanceMap } = this
+        const { resolvedComponents } = this
         const resolvedComponentsReversed = resolvedComponents.slice(0).reverse()
 
         for (const component of resolvedComponentsReversed) {
 
-            const componentInstance = componentToInstanceMap.get(component)
-
-            if (componentInstance && typeof componentInstance.stop === 'function') {
+            if (component instanceof AppiComponent && typeof component.stop === 'function') {
 
                 try {
 
-                    await componentInstance.stop()
+                    await component.stop()
 
                 } catch (err) {
 
@@ -374,11 +360,11 @@ class App {
      */
     static detectComponentType(component) {
 
-        if (component.prototype instanceof AppiComponent) {
+        if (component instanceof AppiComponent) {
 
-            return App.COMPONENT_TYPE_APPI_CLASS
+            return App.COMPONENT_TYPE_APPI_OBJECT
 
-        } else if (typeof component === 'function' && component.isAppiComponent === true) {
+        } else if (typeof component === 'function' && component.componentName) {
 
             return App.COMPONENT_TYPE_APPI_FUNC
 
@@ -427,18 +413,32 @@ class App {
 
         const variablePattern = /^[A-z][A-z0-9]+$/
         const { name, component } = graphItem
-        const isNamedFunction = (typeof component === 'function' && typeof component.name !== 'undefined')
+        const componentType = App.detectComponentType(component)
         let result
 
         if (typeof name === 'string' && name.match(variablePattern) !== null) {
 
+            // The highest priority has the name explicitly given in graph declaration
+
             result = graphItem.name
 
-        } else if (isNamedFunction === true) {
+        } else if (componentType === App.COMPONENT_TYPE_APPI_OBJECT) {
 
-            result = component.name
+            // If component is an instance of AppiComponent, its constructor
+            // should have "componentName" static property, so we cat use it
+
+            result = component.constructor.componentName
+
+        } else if (componentType === App.COMPONENT_TYPE_APPI_FUNC) {
+
+            // If component is a function with static property "componentName"
+            // we are using it
+
+            result = component.componentName
 
         } else {
+
+            // Otherwise name is undetectable, so...
 
             throw new AppError(
                 `Dependency graph item #${index} has invalid or empty "name" property`,
