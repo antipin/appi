@@ -55,4 +55,4 @@ export function logger(deps) {
 
 }
 
-logger.isAppiComponent = true
+logger.componentName = 'logger'
