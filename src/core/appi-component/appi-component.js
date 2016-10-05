@@ -28,4 +28,13 @@ export class AppiComponent {
 
     }
 
+    /**
+     * @type {string}
+     */
+    get name() {
+
+        return this.constructor.componentName
+
+    }
+
 }

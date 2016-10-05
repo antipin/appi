@@ -54,4 +54,20 @@ test('Should throw if AppiComponent successor has no "make" method', t => {
 
 })
 
+test('AppiComponent#name should return componentName', t => {
+
+    class MyComponent extends AppiComponent {
+
+        static componentName = 'myComponent'
+
+        make() {}
+
+    }
+
+    const myComponent = new MyComponent()
+
+    t.is(myComponent.name, 'myComponent')
+
+})
+
 /* eslint-enable */
