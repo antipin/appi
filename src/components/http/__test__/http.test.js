@@ -1,7 +1,7 @@
 import test from 'ava'
 import sinon from 'sinon'
 import { compose } from '../../../../src'
-import { Http } from '../'
+import { http } from '../'
 import { logger } from '../..'
 
 const config = {
@@ -32,7 +32,7 @@ test('Should compose an app from http and its deps', async () => {
             deps: [ env ],
         },
         {
-            component: Http,
+            component: http,
             deps: [ env, logger ],
         },
     ])
@@ -56,11 +56,11 @@ test('Should call route handler with token, payload, params and headers', async 
             deps: [ env ],
         },
         {
-            component: Http,
+            component: http,
             deps: [ env, logger ],
         },
     ])
-    const http = app.getService('Http')
+    const httpService = app.getService('http')
     const handlerStub = sinon.stub().returns(Promise.resolve({
         result: 'some result',
         headers: [
@@ -77,13 +77,13 @@ test('Should call route handler with token, payload, params and headers', async 
         'content-length': '13'
     }
 
-    http.addRoute({
+    httpService.addRoute({
         method: 'POST',
         path: '/resource/{resourceId}',
         handler: handlerStub,
     })
 
-    const res = await http.invoke({
+    const res = await httpService.invoke({
         method: 'POST',
         url: '/resource/42?mode=full',
         headers: {

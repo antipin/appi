@@ -30,7 +30,9 @@ async function makeHapiServer(env, logger) {
 /**
  * Http component
  */
-export class Http extends AppiComponent {
+class Http extends AppiComponent {
+
+    static componentName = 'http'
 
     /**
      * Initializes hapiServer service
@@ -103,3 +105,7 @@ export class Http extends AppiComponent {
     }
 
 }
+
+const http = new Http()
+
+export { http }
