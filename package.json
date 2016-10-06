@@ -2,7 +2,7 @@
   "name": "appi",
   "version": "0.0.2",
   "description": "Unopinionated modular framwork for server applications",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --ignore **/node_modules/**/*.js",
     "build:dev": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --ignore **/node_modules/**/*.js --watch ",
