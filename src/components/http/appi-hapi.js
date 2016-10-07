@@ -19,6 +19,7 @@ const routeSchema = joi.object({
         .required(),
     config: joi.object(),
 })
+const routesSchema = joi.array().items([ routeSchema ])
 
 export class AppiHapi {
 
@@ -84,6 +85,29 @@ export class AppiHapi {
 
             },
         })
+
+    }
+
+    /**
+     * Registers an array of new routes
+     * @param {Array.<AppiRoute>} routes
+     * @returns {void}
+     */
+    addRoutes(routes) {
+
+        const routeValidation = joi.validate(routes, routesSchema)
+
+        if (routeValidation.error) {
+
+            throw routeValidation.error
+
+        }
+
+        for (const route of routes) {
+
+            this.addRoute(route)
+
+        }
 
     }
 
