@@ -1,16 +1,17 @@
 import Good from 'good'
 
-export function makeHapiLogger(logger, logLevel) {
+export function makeHapiLogger(logger) {
 
     const squeezeArgs = {}
+    const logLevel = logger._level
 
-    if (logger[logLevel] <= logger.ERROR) {
+    if (logLevel <= logger.ERROR) {
 
         squeezeArgs.error = '*'
 
     }
 
-    if (logger[logLevel] <= logger.INFO) {
+    if (logLevel <= logger.INFO) {
 
         squeezeArgs.log = '*'
         squeezeArgs.request = '*'
