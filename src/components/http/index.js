@@ -1,1 +1,1 @@
-export * from './http'
+export { http } from './http'
