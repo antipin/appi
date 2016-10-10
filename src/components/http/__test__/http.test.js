@@ -7,7 +7,7 @@ import { logger } from '../..'
 const config = {
     LOG_LEVEL: 'ERROR',
     APP_HOST: '0.0.0.0',
-    APP_PORT: 8000,
+    APP_PORT: 8765,
     AUTH_SALT: '3dSo4sNms1eEMnZzaFReMuDua2bpl2z2',
     AUTH_SECRET: 'uDua2bpl2z23dSo4sNms1eEMnZzaFReM',
     AUTH_TTL: 60 * 60,
@@ -72,7 +72,7 @@ test('Should call route handler with token, payload, params and headers', async 
         authorization: 'Bearer SOMESECRET',
         'x-some-header': 'Im a header',
         'user-agent': 'shot',
-        host: '0.0.0.0:8000',
+        host: `${config.APP_HOST}:${config.APP_PORT}`,
         'content-type': 'application/json',
         'content-length': '13'
     }
