@@ -37,7 +37,7 @@ function getConfig(env) {
  * @param {Object} deps.env Env dependency
  * @returns {Logger} Configured intel logger
  */
-export function logger(deps) {
+function makeLogger(deps) {
 
     const config = validateObject(getConfig(deps.env))
 
@@ -52,6 +52,20 @@ export function logger(deps) {
     }))
 
     return intelLogger
+
+}
+
+let loggerInstance
+
+/**
+ * Returns logger service singleton
+ * @param {Object} deps Appi dependencies
+ * @param {Object} deps.env Env dependency
+ * @returns {Logger} Configured intel logger
+ */
+export function logger(deps) {
+
+    return loggerInstance ? loggerInstance : (loggerInstance = makeLogger(deps))
 
 }
 
