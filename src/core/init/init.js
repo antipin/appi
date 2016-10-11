@@ -70,6 +70,8 @@ export async function init(composeApp) {
 
         await app.start()
 
+        return app
+
     } catch (err) {
 
         crashApp(err)
