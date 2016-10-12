@@ -1,9 +1,10 @@
 import Good from 'good'
 
-export function makeHapiLogger(logger) {
+export async function hapiLogger(deps) {
 
-    const squeezeArgs = {}
+    const { logger, hapi } = deps
     const logLevel = logger._level
+    const squeezeArgs = {}
 
     if (logLevel <= logger.ERROR) {
 
@@ -19,7 +20,7 @@ export function makeHapiLogger(logger) {
 
     }
 
-    return {
+    await hapi.register({
         register: Good,
         options: {
             ops: {
@@ -39,6 +40,8 @@ export function makeHapiLogger(logger) {
                 ],
             }
         }
-    }
+    })
 
 }
+
+hapiLogger.componentName = 'hapiLogger'
