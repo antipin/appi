@@ -8,10 +8,10 @@ export function makeFacebookProvider(config) {
     return {
         strategyOptions: {
             provider: 'facebook',
-            isSecure: config.oauth.isSecure,
-            password: config.oauth.cookiePassword,
-            clientId: config.oauth.providers.facebook.clientId,
-            clientSecret: config.oauth.providers.facebook.clientSecret,
+            isSecure: config.isSecure,
+            password: config.cookiePassword,
+            clientId: config.providers.facebook.clientId,
+            clientSecret: config.providers.facebook.clientSecret,
             runtimeStateCallback: (request) => {
 
                 let result = ''
