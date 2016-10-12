@@ -1,6 +1,7 @@
 import test from 'ava'
 import { compose } from '../../../../src'
-import { hapi, logger } from '../..'
+import { logger } from '../..'
+import { hapi } from '../'
 
 const env = {
     LOG_LEVEL: 'ERROR',
