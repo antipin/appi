@@ -79,4 +79,27 @@ test('validateObject should throw if declaration has no schema property', t => {
 
 })
 
+test('validateObject should process values if required', t => {
+
+    const data = validateObject({
+        data: {
+            foo: 'bar',
+            bar: 42,
+        },
+        schema: {
+            foo: joi.string().only([ 'bar' ]),
+            bar: joi.number(),
+        },
+        processing: {
+            foo: value => value + value
+        }
+    })
+
+    t.deepEqual(data, {
+        foo: 'barbar',
+        bar: 42,
+    })
+
+})
+
 /* eslint-enable */

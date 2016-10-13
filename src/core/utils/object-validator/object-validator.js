@@ -17,6 +17,7 @@ export function validateObject(declaration) {
     const declValidation = joi.validate(declaration, joi.object({
         data: joi.object().required(),
         schema: joi.object().required(),
+        processing: joi.object(),
     }))
 
     if (declValidation.error) {
@@ -25,12 +26,22 @@ export function validateObject(declaration) {
 
     }
 
-    const { data, schema } = declaration
+    const { data, schema, processing } = declaration
     const dataValidation = joi.validate(data, joi.object(schema))
 
     if (dataValidation.error) {
 
         throw dataValidation.error
+
+    }
+
+    if (processing) {
+
+        Object.keys(processing).forEach(paramName => {
+
+            data[paramName] = processing[paramName](data[paramName])
+
+        })
 
     }
 
