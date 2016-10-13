@@ -1,4 +1,4 @@
-import { AppiError } from '../../../src'
+import { AppiError } from '../..'
 
 export class AppiDAOError extends AppiError {
 
