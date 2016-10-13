@@ -1,5 +1,5 @@
 import test from 'ava'
-import { compose } from '../../../../src'
+import { compose } from '../../..'
 import { logger } from '../'
 
 test('Should compose an app from logger and its deps', async () => {

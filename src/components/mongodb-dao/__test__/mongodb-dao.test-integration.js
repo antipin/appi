@@ -2,8 +2,7 @@ import test from 'ava'
 import Chance from 'chance'
 import findIndex from 'lodash/findIndex'
 import { ObjectID } from 'mongodb'
-import { compose } from '../../../../src'
-import { env, logger, mongoDB } from '../..'
+import { compose, env, logger, mongoDB } from '../../..'
 import { mongodbDAO, AppiDAOError } from '../'
 
 const chance = new Chance()

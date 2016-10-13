@@ -1,6 +1,5 @@
 import test from 'ava'
-import { compose } from '../../../../src'
-import { env, logger } from '../..'
+import { compose, env, logger } from '../../..'
 import { mongoDB } from '../'
 
 test('Should compose an app from mongoDB', async (t) => {

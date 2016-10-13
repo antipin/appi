@@ -1,6 +1,5 @@
 import test from 'ava'
-import { compose } from '../../../../src'
-import { logger, hapi } from '../..'
+import { compose, logger, hapi } from '../../..'
 import { hapiLogger } from '../'
 
 const env = {

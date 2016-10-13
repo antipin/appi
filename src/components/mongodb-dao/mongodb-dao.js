@@ -1,7 +1,7 @@
 import omit from 'lodash/omit'
 import { ObjectID } from 'mongodb'
 import { AppiDAOError } from './appi-dao.error'
-import { InternalError } from '../../../src'
+import { InternalError } from '../..'
 
 /**
  * Default number of documents per page used by DAO.find method
