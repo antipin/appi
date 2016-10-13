@@ -9,6 +9,8 @@
     "test": "npm run test-unit",
     "test-unit": "./node_modules/.bin/ava test/**/*.test.js src/**/*.test.js ",
     "test-unit:dev": "npm run test-unit -- --watch",
+    "test-integration": "TEST_COMMAND='./node_modules/.bin/ava --verbose src/**/*.test-integration.js' docker-compose --project-name integration up --abort-on-container-exit appi",
+    "test-integration:dev": "TEST_COMMAND='./node_modules/.bin/ava --verbose --watch src/**/*.test-integration.js' docker-compose --project-name integration-dev up --abort-on-container-exit appi",
     "lint": "./node_modules/.bin/prelint",
     "prepublish": "npm run test && npm run build"
   },
