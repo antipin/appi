@@ -46,6 +46,7 @@
     "joi": "9.0.4",
     "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
+    "mkdirp": "0.5.1",
     "mongodb": "2.1.21"
   },
   "devDependencies": {
