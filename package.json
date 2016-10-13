@@ -47,7 +47,10 @@
     "jsonwebtoken": "7.1.9",
     "lodash": "4.16.4",
     "mkdirp": "0.5.1",
-    "mongodb": "2.1.21"
+    "mongodb": "2.1.21",
+    "sanitize-filename": "1.6.1",
+    "stream-buffers": "3.0.1",
+    "transliteration": "1.1.11"
   },
   "devDependencies": {
     "ava": "0.16.0",
