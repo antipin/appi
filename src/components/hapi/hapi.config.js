@@ -14,7 +14,8 @@ export function getConfig(env) {
          * Default maximum http request payload size
          * @type {number}
          */
-        HTTP_POST_MAX_BODY_SIZE = 50 * 1024 * 1024
+        HTTP_POST_MAX_BODY_SIZE = 50 * 1024 * 1024,
+        CORS = false,
     } = env
 
     return {
@@ -25,6 +26,7 @@ export function getConfig(env) {
                 payload: {
                     maxBytes: HTTP_POST_MAX_BODY_SIZE,
                 },
+                cors: CORS
             },
         },
         schema: {
@@ -40,6 +42,7 @@ export function getConfig(env) {
                     maxBytes: joi.number()
                         .required(),
                 }),
+                cors: joi.boolean(),
             }),
         }
     }

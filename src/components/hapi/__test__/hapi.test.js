@@ -7,7 +7,8 @@ const env = {
     LOG_LEVEL: 'ERROR',
     APP_HOST: '0.0.0.0',
     APP_PORT: 8765,
-    HTTP_POST_MAX_BODY_SIZE: 50 * 1024 * 1024
+    HTTP_POST_MAX_BODY_SIZE: 50 * 1024 * 1024,
+    CORS: true,
 }
 
 test('Should compose an app from http and its deps', async (t) => {
