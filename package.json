@@ -1,6 +1,6 @@
 {
   "name": "appi",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "Unopinionated modular framwork for server applications",
   "main": "dist/index.js",
   "scripts": {
