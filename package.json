@@ -6,9 +6,8 @@
   "scripts": {
     "build": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --ignore **/node_modules/**/*.js",
     "build:dev": "./node_modules/.bin/babel ./src --out-dir dist --copy-files --ignore **/node_modules/**/*.js --watch ",
-    "test": "npm run test-unit",
-    "test-unit": "./node_modules/.bin/ava test/**/*.test.js src/**/*.test.js ",
-    "test-unit:watch": "npm run test-unit -- --watch",
+    "test": "./node_modules/.bin/ava src/**/*.test.js",
+    "test:watch": "npm run test -- --watch",
     "lint": "./node_modules/.bin/prelint",
     "prepublish": "npm run test && npm run build"
   },

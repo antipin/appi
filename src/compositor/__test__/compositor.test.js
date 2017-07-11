@@ -186,83 +186,69 @@ test('Should call components make methods with correspondent dependencies', asyn
 test('App should start all components in the right order', async t => {
 
     const { lights, car, wheels, engine } = createCarGroupComponnets()
+    const app = await compose([
+        {
+            component: lights,
+            deps: [],
+        },
+        {
+            component: wheels,
+            deps: [ lights ],
+        },
+        {
+            component: engine,
+            deps: [ wheels, lights ],
+        },
+        {
+            component: car,
+            deps: [ wheels, engine ],
+        },
+    ])
 
-    try {
+    await app.start()
 
-        const app = await compose([
-            {
-                component: lights,
-                deps: [],
-            },
-            {
-                component: wheels,
-                deps: [ lights ],
-            },
-            {
-                component: engine,
-                deps: [ wheels, lights ],
-            },
-            {
-                component: car,
-                deps: [ wheels, engine ],
-            },
-        ])
+    sinon.assert.callOrder(
+        wheels.start,
+        engine.start,
+        car.start,
+    )
 
-        await app.start()
-
-        sinon.assert.callOrder(
-            wheels.start,
-            engine.start,
-            car.start,
-        )
-
-    } catch (err) {
-
-        t.fail(err)
-
-    }
+    t.pass()
 
 })
 
-test('App should stop all components in the right (backwards) order', async t => {
+test.only('App should stop all components in the right (backwards) order', async t => {
 
     const { lights, car, wheels, engine } = createCarGroupComponnets()
+    const app = await compose([
+        {
+            component: lights,
+            deps: [],
+        },
+        {
+            component: wheels,
+            deps: [ lights ],
+        },
+        {
+            component: engine,
+            deps: [ wheels ],
+        },
+        {
+            component: car,
+            deps: [ wheels, engine ],
+        },
+    ])
 
-    try {
+    await app.start()
+    await app.stop()
 
-        const app = await compose([
-            {
-                component: lights,
-                deps: [],
-            },
-            {
-                component: wheels,
-                deps: [ lights ],
-            },
-            {
-                component: engine,
-                deps: [ wheels ],
-            },
-            {
-                component: car,
-                deps: [ wheels, engine ],
-            },
-        ])
+    sinon.assert.callOrder(
+        car.stop,
+        engine.stop,
+        wheels.stop,
+    )
 
-        await app.start()
-        await app.stop()
-
-        sinon.assert.callOrder(
-            car.stop,
-            engine.stop,
-            wheels.stop,
-        )
-
-    } catch (err) {
-
-        t.fail(err)
-
-    }
+    t.pass()
 
 })
 
