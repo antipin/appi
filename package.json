@@ -33,7 +33,7 @@
     "test-unit"
   ],
   "dependencies": {
-    "joi": "9.1.1"
+    "joi": "10.6.0"
   },
   "devDependencies": {
     "ava": "0.20.0",
