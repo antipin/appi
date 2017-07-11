@@ -217,7 +217,7 @@ test('App should start all components in the right order', async t => {
 
 })
 
-test.only('App should stop all components in the right (backwards) order', async t => {
+test('App should stop all components in the right (backwards) order', async t => {
 
     const { lights, car, wheels, engine } = createCarGroupComponnets()
     const app = await compose([
