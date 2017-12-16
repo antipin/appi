@@ -4,7 +4,7 @@ import { compose } from '../'
 import {
     Car, Wheels, Engine, Lights, engineService, wheelsService, lightsService,
     unstoppablePart, unstartablePart, unmakablePart, appiFunctionComponentService,
-    appiFunctionComponent, functionComponent, simpleObjectComponent } from './test-components'
+    appiFunctionComponent, functionComponent, simpleObjectComponent, simpleArrayComponent } from './test-components'
 
 /* eslint-disable require-jsdoc */
 
@@ -423,12 +423,17 @@ test('App#isComposed should return true if compose invoked successfully', async 
         {
             component: functionComponent,
             name: 'functionComponent',
-            deps: []
+            deps: [],
         },
         {
             component: simpleObjectComponent,
             name: 'simpleObjectComponent',
-            deps: [ functionComponent ]
+            deps: [ functionComponent ],
+        },
+        {
+            component: simpleArrayComponent,
+            name: 'simpleArrayComponent',
+            deps: [],
         },
         {
             component: wheels,

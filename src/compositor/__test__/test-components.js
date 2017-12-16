@@ -11,6 +11,7 @@ export const unstopableService = { name: 'Unstopable' }
 export const functionComponentService = { name: 'FunctionComponentService' }
 export const appiFunctionComponentService = { name: 'AppiFunctionComponentService' }
 export const simpleObjectComponent = { name: 'simpleObjectComponent' }
+export const simpleArrayComponent = { name: 'simpleArrayComponent' }
 
 class Car extends AppiComponent {
 

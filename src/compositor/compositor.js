@@ -290,7 +290,8 @@ class App {
         const componentSchema = joi.alternatives()
             .try(
                 joi.func(),
-                joi.object()
+                joi.object(),
+                joi.array(),
             )
         const componentsGraphItemSchema = joi.object({
             component: componentSchema
